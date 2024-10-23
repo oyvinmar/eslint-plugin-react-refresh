@@ -189,6 +189,11 @@ const valid = [
     name: "Only React context",
     code: "export const MyContext = createContext('test');",
   },
+  {
+    name: "Allow Hocs",
+    code: "const MyComponent = () => {}; export default enhance(MyComponent, () => ({}));",
+    options: [{ allowHOCs: ["enhance"] }],
+  },
 ];
 
 const invalid = [

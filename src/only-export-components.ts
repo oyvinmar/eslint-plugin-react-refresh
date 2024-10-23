@@ -21,6 +21,7 @@ export const onlyExportComponents: TSESLint.RuleModule<
         allowConstantExport?: boolean;
         checkJS?: boolean;
         allowExportNames?: string[];
+        allowHOCs?: string[];
       },
     ]
 > = {
@@ -47,6 +48,7 @@ export const onlyExportComponents: TSESLint.RuleModule<
           allowConstantExport: { type: "boolean" },
           checkJS: { type: "boolean" },
           allowExportNames: { type: "array", items: { type: "string" } },
+          allowHOCs: {type: "array", items: {type: "string"}},
         },
         additionalProperties: false,
       },
@@ -58,6 +60,7 @@ export const onlyExportComponents: TSESLint.RuleModule<
       allowConstantExport = false,
       checkJS = false,
       allowExportNames,
+      allowHOCs,
     } = context.options[0] ?? {};
     const filename = context.filename;
     // Skip tests & stories files
@@ -77,6 +80,10 @@ export const onlyExportComponents: TSESLint.RuleModule<
 
     const allowExportNamesSet = allowExportNames
       ? new Set(allowExportNames)
+      : undefined;
+
+    const allowHOCsSet = allowHOCs
+      ? new Set(allowHOCs)
       : undefined;
 
     return {
@@ -194,6 +201,8 @@ export const onlyExportComponents: TSESLint.RuleModule<
               } else {
                 context.report({ messageId: "anonymousExport", node });
               }
+            } else if (allowHOCsSet?.has(node.callee.name)) {
+              mayHaveReactExport = true;
             } else if (!reactHOCs.has(node.callee.name)) {
               // we rule out non HoC first
               context.report({ messageId: "anonymousExport", node });
